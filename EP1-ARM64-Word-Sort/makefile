@@ -5,7 +5,7 @@ EXEC = string_sort.exe
 
 # Rule to link all object files into the final executable
 $(EXEC): $(OBJDIR) $(OBJS)
-	ld -o $(EXEC) $(OBJS) -lSystem -syslibroot `xcrun -sdk macosx --show-sdk-path` -e _main -arch arm64
+	ld -o $(EXEC) $(OBJS) -lSystem -syslibroot `xcrun -sdk macosx --show-sdk-path` -e main -arch arm64
 
 # Rule to assemble each .s file into a .o file
 $(OBJDIR)/%.o: %.s | $(OBJDIR)
