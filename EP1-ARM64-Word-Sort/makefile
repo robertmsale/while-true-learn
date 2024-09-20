@@ -9,7 +9,7 @@ $(EXEC): $(OBJDIR) $(OBJS)
 
 # Rule to assemble each .s file into a .o file
 $(OBJDIR)/%.o: %.s | $(OBJDIR)
-	as -arch arm64 -o $@ $<
+	as -arch arm64 -g -o $@ $<
 
 # Clean rule to remove object files and executable
 clean:

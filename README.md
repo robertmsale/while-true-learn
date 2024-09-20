@@ -1,4 +1,4 @@
-# while (true) { learn(); }
+# Code Lab Adventures
 Collection of projects created for my [Twitch stream.](https://www.twitch.tv/robmsale)
 
 ## Episode 1 - ARM64 Word Sort

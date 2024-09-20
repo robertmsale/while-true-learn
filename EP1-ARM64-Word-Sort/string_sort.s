@@ -1,6 +1,11 @@
-.global _main
+.global main
 .align 4
 
-_main:
 
+main:
+    
     ret
+
+.align 8
+.data
+buf_text: .asciz "Hello, World!\n"
