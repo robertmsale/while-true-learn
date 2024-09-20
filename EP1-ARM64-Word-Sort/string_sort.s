@@ -77,7 +77,7 @@ _stdin_to_buf_loop:
     mov X3, #' '                    // if ' ', we are not in the word boundary
     cmp X3, X5                      // ^^^^^
     b.eq _stdin_to_buf_invalid      // ^^^^^ Skip adding to buffer
-    strb W5, [X2, #1]!              // Store in buffer
+    strb W5, [X2], #1               // Store in buffer
     add X4, X4, 1                   // Increment word size
     b _stdin_to_buf_loop            // Continue
 _stdin_to_buf_invalid:
@@ -132,7 +132,7 @@ _str_should_swap_loop:
     cmp W3, W4                      
     b.lt _str_should_swap_yes       // W3 < W4 then yes
     b.gt _str_should_swap_end       // W3 > W4 we're done
-    // cbz W3, _str_should_swap_end    // Damn, this was the bug the whole time D:
+    cbz W3, _str_should_swap_end    // Damn, this was the bug the whole time D:
     b _str_should_swap_loop
 _str_should_swap_yes:
     mov X0, #1
