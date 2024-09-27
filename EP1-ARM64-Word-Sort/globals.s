@@ -1,1 +1,1 @@
-word_count .req X19
+wordCount .req X19
