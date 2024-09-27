@@ -1,5 +1,5 @@
 OBJDIR = build
-OBJS = $(OBJDIR)/string_sort.o $(OBJDIR)/fn_stack.o $(OBJDIR)/fn_stdin_to_buf.o $(OBJDIR)/fn_word_len.o $(OBJDIR)/fn_swap.o
+OBJS = $(OBJDIR)/string_sort.o $(OBJDIR)/fn_stack.o $(OBJDIR)/fn_stdin_to_buf.o $(OBJDIR)/fn_word_len.o $(OBJDIR)/fn_swap.o $(OBJDIR)/fn_partition.o $(OBJDIR)/fn_sort_recursive.o $(OBJDIR)/fn_str_should_swap.o
 EXEC = string_sort.exe
 
 C_SRC = cstring_sort.c
