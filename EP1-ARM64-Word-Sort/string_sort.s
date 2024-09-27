@@ -2,6 +2,8 @@
 .global BP
 .align 4
 
+.extern fn_swap
+
 .macro __prep_syscall, imm1
     movz X16, #0x200, lsl #16
     add X16, X16, \imm1
@@ -11,6 +13,9 @@
     adrp \reg, \name@PAGE
     add \reg, \reg, \name@PAGEOFF
 .endm
+
+.include "fn_stack.s"
+.include "globals.s"
 
 /**
     size_t _print(char* X1)
@@ -34,7 +39,7 @@ _print:
 _get_stdin:
     mov X0, #0                      // STDIn File Descriptor
     __get_var X1, buf_stdin         // Load STDIn buffer space ptr
-    movz X2, #0x20, lsl #16         // 0x200000
+    movz X2, #0x20, lsl #16         // 0x200000 max read size
     __prep_syscall #3               // READ Syscall
     svc 0x80                        // Call to kernel software interruptor
     ret
@@ -61,7 +66,7 @@ _get_str_address:
         X19 = Word Count
 */
 _stdin_to_buf:
-    stp X29, X30, [SP, #-16]!       // Stack management
+    fn_stack_backup_lite
     mov X19, #0                     // Initialize word count
     mov X4, #0                      // Set word size to zero
     __get_var X1, buf_stdin         // Get stdin buffer ptr
@@ -92,26 +97,7 @@ _stdin_to_buf_invalid:
     mov X4, #0
     b _stdin_to_buf_loop            // Continue
 _stdin_to_buf_end:
-    ldp X29, X30, [SP], #16         // Stack management
-    ret
-
-/**
-    void _swap(char* X1, char* X2)
-        X1 = left string
-        X2 = right string
-        X5 = i
-        Q0 = left 16 bytes
-        Q1 = right 16 bytes
-*/
-_swap:
-    mov X5, #16                     // i = 16
-_swap_loop:
-    ldr Q0, [X1], #16               // Load left string, X1 += 16
-    ldr Q1, [X2], #16               // Load right string, X2 += 16
-    str Q0, [X2, #-16]              // Store left in right
-    str Q1, [X1, #-16]              // Store right in left
-    sub X5, X5, #1                  // i--
-    cbnz X5, _swap_loop             // i > 0 then continue
+    fn_stack_restore
     ret
 
 /**
@@ -153,7 +139,7 @@ _str_should_swap_end:
         X0 = Returns partition idx
 */
 _partition:
-    stp X29, X30, [SP, #-16]!       // Stack management
+    fn_stack_backup
     stp X1, X2, [SP, #-16]!         // Backup low & high
     mov X11, X1
     mov X12, X2
@@ -181,7 +167,7 @@ _partition_loop:
     bl _get_str_address
     mov X1, X10                     // param 1 = buf[i]
     mov X2, X0                      // param 2 = buf[j]
-    bl _swap
+    bl fn_swap
 _partition_loop_skip:
     add X15, X15, #1                // j++
     b _partition_loop               // Continue
@@ -194,10 +180,10 @@ _partition_end:
     bl _get_str_address
     mov X1, X0                      // param 1 = buf[high]
     mov X2, X10                     // param 2 = buf[i]
-    bl _swap
+    bl fn_swap
     mov X0, X14                     // return i
     ldp X1, X2, [SP], #16           // Stack management
-    ldp X29, X30, [SP], #16         // Stack management
+    fn_stack_restore
     ret
 
 /**
@@ -237,7 +223,7 @@ _sort_recursive_end_early:
     ret
 
 _print_whole_buffer:
-    stp X29, X30, [SP, #-16]!
+    fn_stack_backup_lite
     mov X3, #-1
 
 _print_whole_buffer_loop:
@@ -256,7 +242,7 @@ _print_whole_buffer_end:
     __get_var X1, buf_nl 
     mov X2, #1
     bl _print
-    ldp X29, X30, [SP], #16
+    fn_stack_restore
     ret
 
 main:
